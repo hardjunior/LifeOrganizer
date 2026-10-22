@@ -1,0 +1,54 @@
+# ==============================================================================
+# LifeOrganizer - Git Ignore
+# Garante que nenhum dado pessoal ou confidencial seja enviado para o repositório
+# ==============================================================================
+
+# Banco de dados SQLite local (contém caminhos, nomes de arquivos e metadados pessoais)
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+life_organizer.db
+
+# Miniaturas geradas localmente (contém imagens e fotos pessoais)
+.thumbnails/
+
+# Diretório de logs de execução diária
+logs/
+*.log
+
+# Bytecode e cache do Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+
+# Ambientes virtuais
+venv/
+.venv/
+env/
+ENV/
+
+# Arquivos de ambiente e segredos
+.env
+.env.*
+*.local
+
+# Configurações de IDE e editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Arquivos do sistema operacional
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Diretórios temporários de testes
+scratch/
+tmp/
+*.tmp

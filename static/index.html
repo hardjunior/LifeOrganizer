@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LifeOrganizer - Gestão Visual da sua Vida & Arquivos</title>
+  <link rel="stylesheet" href="/static/style.css?v=1.2.3">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="light-mode">
+  <div id="app">
+    <!-- BARRA SUPERIOR (HEADER ESTILO GOOGLE) -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="logo">
+          <div class="logo-icon">
+            <span class="color-dot red"></span>
+            <span class="color-dot blue"></span>
+            <span class="color-dot green"></span>
+            <span class="color-dot yellow"></span>
+          </div>
+          <span class="logo-text">Life<strong>Organizer</strong></span>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <div class="search-box">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="11" cy="11" r="8" stroke-width="2"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="2"/>
+          </svg>
+          <input type="text" id="searchInput" placeholder="Pesquise por nome, pasta, criador/autor, tipo..." autocomplete="off">
+          <button id="clearSearchBtn" class="clear-btn" style="display:none;">&times;</button>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button id="appModeBtn" class="btn btn-secondary" title="Como transformar em aplicativo desktop nativo">
+          <span>💻 Modo App</span>
+        </button>
+
+        <button id="scanBtn" class="btn btn-primary" title="Escanear e atualizar disco agora">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3" stroke-width="2"/>
+          </svg>
+          <span>Escanear Disco</span>
+        </button>
+
+        <button id="themeToggleBtn" class="icon-btn" title="Alternar Modo Escuro / Claro">
+          <svg class="icon theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke-width="2"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- NAVEGAÇÃO PRINCIPAL (ABAS DE MODO DE VISUALIZAÇÃO) -->
+    <nav class="sub-nav">
+      <div class="nav-tabs">
+        <button class="nav-tab active" data-view="gallery">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke-width="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21" stroke-width="2"/>
+          </svg>
+          <span>Galeria Visual</span>
+        </button>
+
+        <button class="nav-tab highlight-tab" data-view="mindmap">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="3" stroke-width="2"/>
+            <circle cx="4" cy="6" r="2" stroke-width="2"/>
+            <circle cx="20" cy="6" r="2" stroke-width="2"/>
+            <circle cx="4" cy="18" r="2" stroke-width="2"/>
+            <circle cx="20" cy="18" r="2" stroke-width="2"/>
+            <path d="M6 7l4 3M18 7l-4 3M6 17l4-3M18 17l-4-3" stroke-width="2"/>
+          </svg>
+          <span>🧠 Mapa Mental da Vida</span>
+        </button>
+
+        <button class="nav-tab" data-view="timeline">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <rect x="3" y="4" width="18" height="18" rx="2" stroke-width="2"/>
+            <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"/>
+            <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"/>
+            <line x1="3" y1="10" x2="21" y2="10" stroke-width="2"/>
+          </svg>
+          <span>Linha do Tempo</span>
+        </button>
+
+        <button class="nav-tab" data-view="tree">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <line x1="6" y1="3" x2="6" y2="21" stroke-width="2"/>
+            <circle cx="18" cy="6" r="3" stroke-width="2"/>
+            <circle cx="6" cy="18" r="3" stroke-width="2"/>
+            <path d="M18 9a9 9 0 0 1-9 9" stroke-width="2"/>
+          </svg>
+          <span>Árvore de Pastas</span>
+        </button>
+
+        <button class="nav-tab" data-view="cleaner">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4" stroke-width="2"/>
+          </svg>
+          <span>Central de Limpeza</span>
+          <span id="cleanerAlertBadge" class="badge-pill">0</span>
+        </button>
+
+        <button class="nav-tab" data-view="scheduler">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="10" stroke-width="2"/>
+            <polyline points="12 6 12 12 16 14" stroke-width="2"/>
+          </svg>
+          <span>Automação Diária (Cron)</span>
+          <span id="cronStatusDot" class="status-dot"></span>
+        </button>
+      </div>
+
+      <div class="header-tools">
+        <button id="toggleFilterSidebarBtn" class="btn btn-secondary btn-sm" title="Mostrar/Ocultar Filtro Lateral">
+          <span>🎛️ Painel de Filtros</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- BANNER DE PROGRESSO DE ESCANEAMENTO -->
+    <div id="scanStatusBar" class="scan-banner" style="display: none;">
+      <div class="spinner"></div>
+      <div class="scan-text">
+        <strong id="scanStatusTitle">Escaneando disco em segundo plano...</strong>
+        <span id="scanStatusFolder">Iniciando...</span>
+      </div>
+    </div>
+
+    <!-- ÁREA DE CONTEÚDO PRINCIPAL -->
+    <main class="main-content">
+      <!-- 1. VISTA: GALERIA VISUAL COM FILTRO LATERAL COMPLETO -->
+      <section id="galleryView" class="view-panel active">
+        <div class="gallery-layout">
+          <!-- FILTRO LATERAL REATIVO -->
+          <aside class="filter-sidebar" id="filterSidebar">
+            <div class="sidebar-header">
+              <h3>Filtros & Ordenação</h3>
+              <button id="resetFiltersBtn" class="btn btn-text btn-sm">Limpar</button>
+            </div>
+
+            <!-- Grupo: Ordenação -->
+            <div class="filter-group">
+              <span class="group-title">⚡ Ordenação</span>
+              <div class="radio-pill-list" id="sortOptions">
+                <button class="filter-opt-btn active" data-sort="modified_desc">🕒 Mais recentes</button>
+                <button class="filter-opt-btn" data-sort="modified_asc">⏳ Mais antigos</button>
+                <button class="filter-opt-btn" data-sort="size_desc">📈 Maior tamanho</button>
+                <button class="filter-opt-btn" data-sort="size_asc">📉 Menor tamanho</button>
+                <button class="filter-opt-btn" data-sort="name_asc">🔤 Nome (A-Z)</button>
+                <button class="filter-opt-btn" data-sort="name_desc">🔠 Nome (Z-A)</button>
+              </div>
+            </div>
+
+            <!-- Grupo: Período -->
+            <div class="filter-group">
+              <span class="group-title">📅 Período</span>
+              <div class="radio-pill-list" id="periodOptions">
+                <button class="filter-opt-btn active" data-period="all">Todas as datas</button>
+                <button class="filter-opt-btn" data-period="today">Hoje</button>
+                <button class="filter-opt-btn" data-period="7days">Últimos 7 dias</button>
+                <button class="filter-opt-btn" data-period="30days">Últimos 30 dias</button>
+                <button class="filter-opt-btn" data-period="year2026">Ano de 2026</button>
+                <button class="filter-opt-btn" data-period="year2025">Ano de 2025</button>
+                <button class="filter-opt-btn" data-period="older">Mais antigos</button>
+              </div>
+            </div>
+
+            <!-- Grupo: Categorias -->
+            <div class="filter-group">
+              <span class="group-title">📁 Categoria</span>
+              <div class="radio-pill-list" id="categoryOptions">
+                <button class="filter-opt-btn active" data-cat="all">🌟 Todas</button>
+                <button class="filter-opt-btn" data-cat="image">📷 Imagens</button>
+                <button class="filter-opt-btn" data-cat="document">📄 Documentos</button>
+                <button class="filter-opt-btn" data-cat="video">🎬 Vídeos</button>
+                <button class="filter-opt-btn" data-cat="audio">🎵 Áudios</button>
+                <button class="filter-opt-btn" data-cat="code">💻 Códigos & Scripts</button>
+                <button class="filter-opt-btn" data-cat="archive">📦 Compactados</button>
+              </div>
+            </div>
+
+            <!-- Grupo: Filtros Especiais -->
+            <div class="filter-group">
+              <span class="group-title">🚨 Especiais</span>
+              <div class="radio-pill-list" id="specialOptions">
+                <button class="filter-opt-btn special-warning" id="btnFilterRoot">⚠️ Soltos na Raiz (D:\)</button>
+                <button class="filter-opt-btn special-info" id="btnFilterDups">👥 Duplicados</button>
+                <button class="filter-opt-btn" id="btnFilterHeavy">🐘 Pesados (> 100 MB)</button>
+              </div>
+            </div>
+
+            <!-- Grupo: Proprietário / Criador -->
+            <div class="filter-group">
+              <span class="group-title">👤 Criador / Autor</span>
+              <div class="radio-pill-list" id="ownerOptions">
+                <button class="filter-opt-btn active" data-owner="all">Todos os autores</button>
+                <button class="filter-opt-btn" data-owner="Junior">👤 Junior</button>
+                <button class="filter-opt-btn" data-owner="Administradores">🛡️ Administradores</button>
+                <button class="filter-opt-btn" data-owner="SYSTEM">⚙️ Sistema</button>
+              </div>
+            </div>
+          </aside>
+
+          <!-- CONTEÚDO DA GALERIA -->
+          <div class="gallery-content">
+            <div class="gallery-topbar">
+              <div id="galleryStats" class="summary-pills"></div>
+              <div class="active-filters-tags" id="activeFilterTags"></div>
+            </div>
+
+            <div id="filesGrid" class="cards-grid">
+              <!-- Cards gerados dinamicamente via JS -->
+            </div>
+
+            <div id="pagination" class="pagination-container"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. VISTA: 🧠 MAPA MENTAL DA VIDA & RELAÇÕES (COMPLETO & DINÂMICO) -->
+      <section id="mindmapView" class="view-panel">
+        <div class="mindmap-header">
+          <div>
+            <h2>🧠 Mapa Mental da Vida & Grafo de Relações</h2>
+            <p>Árvore completa com expansão dinâmica ilimitada. Clique nos nós para abrir os ramos ou siga qualquer link!</p>
+          </div>
+          <div class="mindmap-controls">
+            <input type="text" id="mindmapSearchInput" class="text-input" style="width: 260px; padding: 6px 12px; font-size: 13px;" placeholder="🔍 Rastrear pasta (ex: Documentos)...">
+            <button id="mindmapZoomIn" class="btn btn-secondary btn-sm" title="Aumentar Zoom">➕</button>
+            <button id="mindmapZoomOut" class="btn btn-secondary btn-sm" title="Diminuir Zoom">➖</button>
+            <button id="mindmapReset" class="btn btn-secondary btn-sm" title="Centralizar Mapa">🎯 Centralizar</button>
+          </div>
+        </div>
+
+        <!-- Trilha de Linhagem / Breadcrumbs da Árvore -->
+        <div class="mindmap-trail-bar">
+          <span class="trail-label">Trilha da Árvore:</span>
+          <div id="mindmapBreadcrumbs" class="breadcrumbs-list">
+            <!-- Gerado dinamicamente -->
+          </div>
+        </div>
+
+        <div class="mindmap-wrapper">
+          <div id="mindmapCanvas" class="mindmap-canvas-container">
+            <!-- Renderizado dinamicamente via SVG interativo -->
+          </div>
+
+          <!-- Painel lateral de detalhes do nó clicado -->
+          <aside id="nodeDetailPanel" class="node-detail-panel">
+            <div class="node-detail-empty">
+              <span>👈 Clique em qualquer pasta ou ramo do mapa para explorar seus arquivos e relações.</span>
+            </div>
+            <div id="nodeDetailContent" style="display: none;">
+              <h3 id="nodeTitle">Nome do Ramo</h3>
+              <p class="node-path" id="nodePath">Caminho</p>
+              <div class="node-stats-grid">
+                <div class="node-stat-item">
+                  <span class="label">Arquivos</span>
+                  <strong id="nodeFileCount">0</strong>
+                </div>
+                <div class="node-stat-item">
+                  <span class="label">Tamanho Total</span>
+                  <strong id="nodeTotalSize">0 MB</strong>
+                </div>
+                <div class="node-stat-item">
+                  <span class="label">Criador</span>
+                  <strong id="nodeOwner">-</strong>
+                </div>
+              </div>
+
+              <div class="node-actions">
+                <button id="nodeOpenExplorerBtn" class="btn btn-secondary full-width">📂 Abrir no Windows Explorer</button>
+                <button id="nodeViewGalleryBtn" class="btn btn-primary full-width">👁️ Ver Arquivos desta Pasta</button>
+                <button id="nodeDeleteFolderBtn" class="btn btn-danger full-width" style="display:none;">🗑️ Excluir Pasta (Enviar para Lixeira)</button>
+              </div>
+
+              <div class="node-children-list">
+                <h4>O que faz parte deste nó:</h4>
+                <div id="nodeSampleList" class="sample-items-list"></div>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <!-- OVERLAY DE GALERIA DA PASTA DENTRO DO MAPA MENTAL (O MAPA PERMANECE EXATAMENTE LÁ!) -->
+        <div id="mindmapGalleryOverlay" class="mindmap-gallery-overlay" style="display: none;">
+          <div class="mindmap-modal-dialog">
+            <div class="overlay-header">
+              <div class="overlay-title-group">
+                <h3 id="overlayGalleryTitle">📁 Arquivos da Pasta</h3>
+                <p id="overlayGallerySubtitle" class="text-muted">Caminho da pasta</p>
+              </div>
+              <div class="overlay-actions">
+                <label style="display:inline-flex; align-items:center; gap:6px; font-size:13px; cursor:pointer; color:var(--text-secondary); user-select:none;">
+                  <input type="checkbox" id="overlayIncludeSubfolders"> Incluir subpastas
+                </label>
+                <button id="overlayOpenExplorerBtn" class="btn btn-secondary btn-sm">📂 Abrir no Explorer</button>
+                <button id="overlayDeleteFolderBtn" class="btn btn-danger btn-sm" style="display:none;">🗑️ Excluir Pasta</button>
+                <button id="closeMindmapGalleryBtn" class="btn btn-primary btn-sm">✖️ Fechar e Voltar ao Mapa</button>
+              </div>
+            </div>
+            <!-- Subpastas imediatas como atalhos de navegação caso existam -->
+            <div id="overlaySubfoldersBar" class="overlay-subfolders-bar" style="display: none;"></div>
+            <div id="mindmapGalleryGrid" class="cards-grid overlay-grid"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. VISTA: LINHA DO TEMPO CRONOLÓGICA -->
+      <section id="timelineView" class="view-panel">
+        <div class="timeline-header">
+          <h2>📅 Linha do Tempo da sua Vida Digital</h2>
+          <p>Seus arquivos organizados cronologicamente por ano e mês de modificação.</p>
+        </div>
+        <div id="timelineContainer" class="timeline-list"></div>
+      </section>
+
+      <!-- 4. VISTA: ÁRVORE HIERÁRQUICA DE PASTAS -->
+      <section id="treeView" class="view-panel">
+        <div class="tree-header">
+          <h2>🌳 Navegação Completa da Árvore de Pastas</h2>
+          <p>Visualize quem é o criador de cada pasta, tamanho e quantidade de arquivos.</p>
+        </div>
+        <div class="tree-layout">
+          <div id="treeSidebar" class="tree-container"></div>
+          <div id="treeFolderContent" class="tree-folder-details">
+            <div class="empty-state">
+              <p>Selecione uma pasta na árvore à esquerda para visualizar seus arquivos.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. VISTA: CENTRAL DE LIMPEZA & AUTO-ORGANIZAÇÃO (RENOVADA) -->
+      <section id="cleanerView" class="view-panel">
+        <div class="cleaner-header">
+          <h2>🧹 Central de Organização & Limpeza Inteligente</h2>
+          <p>Mova arquivos soltos da raiz para pastas certas, elimine duplicatas idênticas e limpe temporários com segurança.</p>
+        </div>
+
+        <div class="cleaner-tabs-sub">
+          <button class="cleaner-subtab active" data-sub="root">📁 Arquivos Soltos na Raiz (<span id="rootCountBadge">0</span>)</button>
+          <button class="cleaner-subtab" data-sub="dups">👥 Arquivos Duplicados (<span id="dupCountBadge">0</span>)</button>
+          <button class="cleaner-subtab" data-sub="temp">🗑️ Arquivos Temporários Antigos</button>
+        </div>
+
+        <!-- Subpainel 1: Arquivos Soltos da Raiz -->
+        <div id="cleanerSubRoot" class="cleaner-subpanel active">
+          <div class="cleaner-panel-card">
+            <div class="card-top">
+              <div class="card-icon-badge warning">📁</div>
+              <div class="card-titles">
+                <h3>Arquivos Soltos na Raiz de D:\</h3>
+                <p id="rootFilesSummary">Identificando arquivos...</p>
+              </div>
+              <div class="top-action-btn">
+                <button id="organizeRootBtn" class="btn btn-primary">
+                  <span>✨ Auto-Organizar Todos os Arquivos da Raiz</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="root-table-container">
+              <table class="cleaner-table" id="rootFilesTable">
+                <thead>
+                  <tr>
+                    <th>Arquivo</th>
+                    <th>Tipo</th>
+                    <th>Destino Sugerido</th>
+                    <th>Tamanho</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="rootFilesTableBody">
+                  <!-- Linhas preenchidas via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subpainel 2: Duplicatas -->
+        <div id="cleanerSubDups" class="cleaner-subpanel">
+          <div class="cleaner-panel-card">
+            <div class="card-top">
+              <div class="card-icon-badge info">👥</div>
+              <div class="card-titles">
+                <h3>Grupos de Arquivos Duplicados</h3>
+                <p id="duplicateSummary">Calculando cópias idênticas no disco...</p>
+              </div>
+            </div>
+            <div id="duplicateGroupsContainer" class="duplicate-groups-list"></div>
+          </div>
+        </div>
+
+        <!-- Subpainel 3: Temporários -->
+        <div id="cleanerSubTemp" class="cleaner-subpanel">
+          <div class="cleaner-panel-card">
+            <div class="card-top">
+              <div class="card-icon-badge danger">🗑️</div>
+              <div class="card-titles">
+                <h3>Arquivos Temporários e Caches (.tmp, .bak)</h3>
+                <p>Arquivos temporários com mais de 14 dias que podem ser enviados para a Lixeira.</p>
+              </div>
+              <div class="top-action-btn">
+                <button id="cleanTempNowBtn" class="btn btn-danger">
+                  <span>🗑️ Enviar Temporários para Lixeira</span>
+                </button>
+              </div>
+            </div>
+            <div id="tempFilesResults" class="temp-results-box">
+              <p class="text-muted">Clique no botão acima para iniciar a limpeza segura de arquivos temporários.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. VISTA: AGENDAMENTO DIÁRIO / CRON -->
+      <section id="schedulerView" class="view-panel">
+        <div class="scheduler-container">
+          <div class="scheduler-header">
+            <h2>⏰ Automação Diária em Segundo Plano (Cron)</h2>
+            <p>Execute diariamente a rotina para manter tudo catalogado, limpo e organizado automaticamente sem precisar abrir o programa.</p>
+          </div>
+
+          <div class="scheduler-grid">
+            <div class="config-card">
+              <h3>Configuração da Execução Diária</h3>
+              
+              <div class="form-group">
+                <label for="cronTimeInput">Horário de Execução Diária:</label>
+                <div class="time-input-row">
+                  <input type="time" id="cronTimeInput" value="03:00">
+                  <button id="saveCronBtn" class="btn btn-primary">Ativar no Windows</button>
+                  <button id="removeCronBtn" class="btn btn-danger">Desativar</button>
+                </div>
+                <small>Horário em que o Windows executará a varredura e rotina de organização.</small>
+              </div>
+
+              <div class="task-status-box">
+                <h4>Status Atual da Tarefa no Windows:</h4>
+                <div class="status-row">
+                  <span>Agendado:</span>
+                  <strong id="schedInstalled">Verificando...</strong>
+                </div>
+                <div class="status-row">
+                  <span>Próxima Execução:</span>
+                  <strong id="schedNextRun">-</strong>
+                </div>
+                <div class="status-row">
+                  <span>Última Execução:</span>
+                  <strong id="schedLastRun">-</strong>
+                </div>
+              </div>
+
+              <div class="trigger-box">
+                <button id="triggerNowBtn" class="btn btn-secondary">
+                  <span>▶️ Executar Rotina Diária Agora (Teste Manual)</span>
+                </button>
+              </div>
+
+              <div class="cron-linux-box">
+                <h4>Comando Clássico Crontab (Linux / WSL):</h4>
+                <code><pre id="linuxCronCode">0 3 * * * /usr/bin/python3 /mnt/d/LifeOrganizer/run_daily.py</pre></code>
+              </div>
+            </div>
+
+            <div class="history-card">
+              <h3>Histórico de Ações & Automação</h3>
+              <div id="historyList" class="history-list"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- BARRA FLUTUANTE DE AÇÕES EM LOTE -->
+    <div id="batchBar" class="batch-action-bar" style="display: none;">
+      <div class="batch-info">
+        <span id="selectedCount">0</span> itens selecionados
+      </div>
+      <div class="batch-buttons">
+        <button id="batchMoveBtn" class="btn btn-secondary">📁 Mover Selecionados</button>
+        <button id="batchDeleteBtn" class="btn btn-danger">🗑️ Enviar para Lixeira</button>
+        <button id="batchClearBtn" class="btn btn-text">✖️ Desmarcar</button>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toastNotification" class="toast-notification"></div>
+
+    <!-- MODAL DE VISUALIZAÇÃO / LIGHTBOX -->
+    <div id="previewModal" class="modal-backdrop" style="display: none;">
+      <div class="modal-dialog preview-dialog">
+        <button class="modal-close-btn" id="closePreviewBtn">&times;</button>
+        <div class="preview-modal-body">
+          <div class="preview-media-container" id="mediaViewer"></div>
+          <div class="preview-sidebar">
+            <h3 id="previewFileName">Nome do Arquivo</h3>
+            <div class="metadata-table">
+              <div class="meta-item">
+                <span class="meta-label">Caminho:</span>
+                <span class="meta-val clickable-path" id="previewFilePath" title="Clique para abrir no Windows Explorer">-</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Pasta:</span>
+                <span class="meta-val clickable-path" id="previewFileDir" title="Clique para abrir pasta no Windows Explorer">-</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Tamanho:</span>
+                <span class="meta-val" id="previewFileSize">-</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Tipo:</span>
+                <span class="meta-val" id="previewFileType">-</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Criador / Owner:</span>
+                <span class="meta-val highlight-owner" id="previewFileOwner">-</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Modificado em:</span>
+                <span class="meta-val" id="previewFileModified">-</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Criado em:</span>
+                <span class="meta-val" id="previewFileCreated">-</span>
+              </div>
+            </div>
+
+            <div class="modal-actions-list">
+              <button id="modalMindmapTraceBtn" class="btn btn-secondary full-width">
+                <span>🧠 Rastrear Relação no Mapa Mental</span>
+              </button>
+              <button id="openInExplorerBtn" class="btn btn-secondary full-width">
+                <span>📂 Revelar no Windows Explorer</span>
+              </button>
+              <button id="modalRenameBtn" class="btn btn-secondary full-width">
+                <span>✏️ Renomear Arquivo</span>
+              </button>
+              <button id="modalMoveBtn" class="btn btn-secondary full-width">
+                <span>📁 Mover para Outra Pasta</span>
+              </button>
+              <button id="modalDeleteBtn" class="btn btn-danger full-width">
+                <span>🗑️ Enviar para a Lixeira</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL "COMO TRANSFORMAR EM APP DESKTOP" -->
+    <div id="appModal" class="modal-backdrop" style="display: none;">
+      <div class="modal-dialog small-dialog">
+        <button class="modal-close-btn" id="closeAppModalBtn">&times;</button>
+        <h3>💻 Como Usar como Aplicativo Desktop</h3>
+        <p class="text-muted" style="margin-bottom: 16px;">Você pode usar o LifeOrganizer como um aplicativo desktop nativo sem barra de navegador!</p>
+
+        <div class="app-instructions-list">
+          <div class="app-step">
+            <strong>1. Atalho na Área de Trabalho (Já criado!):</strong>
+            <p>Foi criado um atalho chamado <code>LifeOrganizer</code> na sua Área de Trabalho. Dê dois cliques nele e o aplicativo abrirá em uma janela nativa independente!</p>
+          </div>
+          <div class="app-step">
+            <strong>2. Executar via Script:</strong>
+            <p>Você pode clicar em <code>D:\Projetos\LifeOrganizer\LifeOrganizer_App.bat</code> a qualquer momento.</p>
+          </div>
+          <div class="app-step">
+            <strong>3. Instalar como PWA (Chrome ou Edge):</strong>
+            <p>No menu do seu navegador (três pontinhos no topo direito), clique em <strong>"Aplicativos" ➡️ "Instalar este site como aplicativo"</strong>.</p>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button id="recreateShortcutBtn" class="btn btn-secondary">🔄 Recriar Atalho na Área de Trabalho</button>
+          <button id="closeAppModalBtn2" class="btn btn-primary">Entendido</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL DE RENOMEAR -->
+    <div id="renameModal" class="modal-backdrop" style="display: none;">
+      <div class="modal-dialog small-dialog">
+        <h3>Renomear Arquivo</h3>
+        <p id="renameCurrentPath" class="text-muted"></p>
+        <div class="form-group">
+          <input type="text" id="renameInput" class="text-input" placeholder="Novo nome do arquivo...">
+        </div>
+        <div class="modal-actions">
+          <button id="cancelRenameBtn" class="btn btn-secondary">Cancelar</button>
+          <button id="confirmRenameBtn" class="btn btn-primary">Salvar Nome</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL DE MOVER -->
+    <div id="moveModal" class="modal-backdrop" style="display: none;">
+      <div class="modal-dialog small-dialog">
+        <h3>Mover Arquivo</h3>
+        <p id="moveCurrentPath" class="text-muted"></p>
+        <div class="form-group">
+          <label>Destinos Sugeridos:</label>
+          <div class="preset-destinations">
+            <button class="preset-btn" data-dest="D:\Imagem">📷 Imagem</button>
+            <button class="preset-btn" data-dest="D:\Documentos">📄 Documentos</button>
+            <button class="preset-btn" data-dest="D:\musicas">🎵 Músicas</button>
+            <button class="preset-btn" data-dest="D:\Videos">🎬 Vídeos</button>
+            <button class="preset-btn" data-dest="D:\Backup\Compactados">📦 Backup</button>
+            <button class="preset-btn" data-dest="D:\Projetos\Scripts">💻 Projetos</button>
+          </div>
+          <label for="moveDestInput" style="margin-top:12px; display:block;">Ou digite o caminho da pasta:</label>
+          <input type="text" id="moveDestInput" class="text-input" placeholder="Ex: D:\Documentos\Pessoal">
+        </div>
+        <div class="modal-actions">
+          <button id="cancelMoveBtn" class="btn btn-secondary">Cancelar</button>
+          <button id="confirmMoveBtn" class="btn btn-primary">Mover Agora</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js?v=1.2.3"></script>
+</body>
+</html>
